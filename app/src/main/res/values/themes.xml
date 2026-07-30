@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <style name="Theme.PetOverflow" parent="Theme.AppCompat.Light.DayNight">
+        <item name="colorPrimary">#D4A574</item>
+        <item name="colorPrimaryVariant">#C4956A</item>
+        <item name="colorOnPrimary">#FFFFFF</item>
+        <item name="colorSecondary">#F5E6D3</item>
+        <item name="colorOnSecondary">#3D2A1A</item>
+    </style>
+</resources>

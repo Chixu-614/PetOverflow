@@ -1,0 +1,277 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+<style>
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+    background: transparent;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: sans-serif;
+}
+
+.pet-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    transition: transform 0.3s ease;
+}
+
+/* 宠物身体 - 一个圆圆的毛球 */
+.pet-body {
+    width: 120px;
+    height: 120px;
+    background: radial-gradient(circle at 40% 35%, #f5e6d3, #d4a574);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
+    transition: all 0.3s ease;
+    position: relative;
+}
+
+/* 耳朵 */
+.ear {
+    position: absolute;
+    width: 30px;
+    height: 35px;
+    background: #c4956a;
+    border-radius: 50% 50% 0 0;
+    top: -12px;
+    transition: transform 0.3s ease;
+}
+.ear-left {
+    left: 15px;
+    transform: rotate(-15deg);
+}
+.ear-right {
+    right: 15px;
+    transform: rotate(15deg);
+}
+
+/* 眼睛 */
+.eyes {
+    display: flex;
+    gap: 20px;
+    margin-top: 10px;
+}
+.eye {
+    width: 14px;
+    height: 16px;
+    background: #3d2a1a;
+    border-radius: 50%;
+    transition: all 0.2s ease;
+    position: relative;
+}
+.eye::after {
+    content: '';
+    position: absolute;
+    width: 5px;
+    height: 5px;
+    background: white;
+    border-radius: 50%;
+    top: 3px;
+    right: 2px;
+}
+
+/* 嘴巴 */
+.mouth {
+    width: 20px;
+    height: 10px;
+    border-bottom: 3px solid #3d2a1a;
+    border-radius: 0 0 20px 20px;
+    margin-top: 8px;
+    transition: all 0.3s ease;
+}
+
+/* 腮红 */
+.blush {
+    width: 20px;
+    height: 12px;
+    background: rgba(255,150,150,0.4);
+    border-radius: 50%;
+    position: absolute;
+    bottom: 25px;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+.blush-left { left: 5px; }
+.blush-right { right: 5px; }
+
+/* 气泡 */
+.bubble {
+    position: absolute;
+    top: -40px;
+    background: white;
+    border-radius: 15px;
+    padding: 8px 14px;
+    font-size: 14px;
+    color: #555;
+    white-space: nowrap;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+    opacity: 0;
+    transform: translateY(10px);
+    transition: all 0.3s ease;
+    pointer-events: none;
+}
+.bubble.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+.bubble::after {
+    content: '';
+    position: absolute;
+    bottom: -8px;
+    left: 50%;
+    transform: translateX(-50%);
+    border-left: 8px solid transparent;
+    border-right: 8px solid transparent;
+    border-top: 10px solid white;
+}
+
+/* 动画状态 */
+.pet-body.happy {
+    transform: scale(1.1);
+    background: radial-gradient(circle at 40% 35%, #ffe0d0, #e8b88a);
+}
+.pet-body.angry {
+    background: radial-gradient(circle at 40% 35%, #ffcccc, #d4756a);
+    transform: rotate(5deg);
+}
+.pet-body.sleep {
+    transform: scale(0.95);
+}
+.pet-body.hurt {
+    transform: scale(0.85);
+    animation: shake 0.5s ease;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0) scale(0.85); }
+    25% { transform: translateX(-8px) scale(0.85); }
+    75% { transform: translateX(8px) scale(0.85); }
+}
+
+/* 空闲动画 - 轻微呼吸 */
+@keyframes breathe {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-4px); }
+}
+.pet-container.idle {
+    animation: breathe 3s ease-in-out infinite;
+}
+</style>
+</head>
+<body>
+
+<div class="pet-container idle" id="pet">
+    <div class="bubble" id="bubble"></div>
+    <div class="pet-body" id="body">
+        <div class="ear ear-left"></div>
+        <div class="ear ear-right"></div>
+        <div class="eyes">
+            <div class="eye" id="eye-left"></div>
+            <div class="eye" id="eye-right"></div>
+        </div>
+        <div class="mouth" id="mouth"></div>
+        <div class="blush blush-left" id="blush-left"></div>
+        <div class="blush blush-right" id="blush-right"></div>
+    </div>
+</div>
+
+<script>
+// ========== 宠物引擎 ==========
+const pet = {
+    body: document.getElementById('body'),
+    bubble: document.getElementById('bubble'),
+    blushLeft: document.getElementById('blush-left'),
+    blushRight: document.getElementById('blush-right'),
+    mouth: document.getElementById('mouth'),
+    container: document.getElementById('pet'),
+    eyeLeft: document.getElementById('eye-left'),
+    eyeRight: document.getElementById('eye-right'),
+
+    bubbleTimer: null,
+
+    // 气泡
+    showBubble(text, duration) {
+        this.bubble.textContent = text;
+        this.bubble.classList.add('show');
+        clearTimeout(this.bubbleTimer);
+        this.bubbleTimer = setTimeout(() => {
+            this.bubble.classList.remove('show');
+        }, duration || 2000);
+    },
+
+    // 重置所有状态
+    resetState() {
+        this.body.className = '';
+        this.container.className = 'pet-container idle';
+        this.blushLeft.style.opacity = '0';
+        this.blushRight.style.opacity = '0';
+        this.mouth.style.borderBottom = '3px solid #3d2a1a';
+        this.mouth.style.borderRadius = '0 0 20px 20px';
+        this.eyeLeft.style.width = '14px';
+        this.eyeLeft.style.height = '16px';
+        this.eyeRight.style.width = '14px';
+        this.eyeRight.style.height = '16px';
+        setTimeout(() => {
+            this.container.className = 'pet-container idle';
+        }, 800);
+    }
+};
+
+// ========== 手势事件 ==========
+const Engine = {
+    onTap() {
+        pet.resetState();
+        pet.body.classList.add('happy');
+        pet.showBubble('嘿嘿~', 1500);
+        setTimeout(() => pet.resetState(), 1000);
+    },
+    onDoubleTap() {
+        pet.resetState();
+        pet.body.classList.add('happy');
+        pet.blushLeft.style.opacity = '0.6';
+        pet.blushRight.style.opacity = '0.6';
+        pet.showBubble('干嘛啦！⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄', 2000);
+        setTimeout(() => pet.resetState(), 1500);
+    },
+    onTripleTap() {
+        pet.resetState();
+        pet.body.classList.add('angry');
+        pet.showBubble('别戳了！(◣_◢)', 2000);
+        setTimeout(() => pet.resetState(), 1500);
+    },
+    onRapidTap() {
+        pet.resetState();
+        pet.body.classList.add('angry');
+        pet.mouth.style.borderBottom = '3px solid #d4756a';
+        pet.mouth.style.borderRadius = '20px 20px 0 0';
+        pet.showBubble('你完了！(╯°□°)╯', 2000);
+        setTimeout(() => pet.resetState(), 1500);
+    },
+    onFuriousTap() {
+        pet.resetState();
+        pet.body.classList.add('hurt');
+        pet.showBubble('呜哇——！(;´༎ຶД༎ຶ`)', 2500);
+        setTimeout(() => pet.resetState(), 2000);
+    },
+    onLongPress() {
+        pet.resetState();
+        pet.showBubble('唔…干嘛一直按着我', 2000);
+        setTimeout(() => pet.resetState(), 1500);
+    }
+};
+
+window.petEngine = Engine;
+</script>
+</body>
+</html>

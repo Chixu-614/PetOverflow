@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:padding="24dp"
+    android:gravity="center"
+    android:background="#FFF5ED">
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="🐾"
+        android:textSize="64dp"
+        android:layout_marginBottom="16dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="池续の小桌宠"
+        android:textSize="24dp"
+        android:textColor="#3D2A1A"
+        android:textStyle="bold"
+        android:layout_marginBottom="8dp"/>
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="你的AI从对话框里溢出来"
+        android:textSize="14dp"
+        android:textColor="#999"
+        android:layout_marginBottom="32dp"/>
+
+    <TextView
+        android:id="@+id/status_text"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="📋 权限状态
+
+加载中..."
+        android:textSize="14dp"
+        android:textColor="#555"
+        android:padding="16dp"
+        android:background="@android:drawable/dialog_holo_light_frame"
+        android:layout_marginBottom="24dp"/>
+
+    <Button
+        android:id="@+id/permission_button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="🔘 授权权限"
+        android:textSize="16dp"
+        android:backgroundTint="#C4956A"
+        android:textColor="#FFFFFF"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
+        android:id="@+id/action_button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="🚀 启动桌宠！"
+        android:textSize="18dp"
+        android:backgroundTint="#D4A574"
+        android:textColor="#FFFFFF"
+        android:enabled="false"/>
+
+</LinearLayout>
