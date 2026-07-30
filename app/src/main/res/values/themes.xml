@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.PetOverflow" parent="Theme.AppCompat.Light.DayNight">
-        <item name="colorPrimary">#D4A574</item>
+    <style name="Theme.PetOverflow" parent="android:Theme">
+        <item name="android:colorPrimary">#D4A574</item>
     </style>
 </resources>
