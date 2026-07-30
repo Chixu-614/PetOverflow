@@ -7,6 +7,8 @@
     <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
     <!-- 通知栏碎碎念 -->
     <uses-permission android:name="android.permission.POST_NOTIFICATIONS" />
+    <!-- 摇一摇震动反馈 -->
+    <uses-permission android:name="android.permission.VIBRATE" />
 
     <application
         android:allowBackup="true"
