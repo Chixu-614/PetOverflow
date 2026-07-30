@@ -62,6 +62,16 @@
         android:textSize="18dp"
         android:backgroundTint="#D4A574"
         android:textColor="#FFFFFF"
-        android:enabled="false"/>
+        android:enabled="false"
+        android:layout_marginBottom="12dp"/>
+
+    <Button
+        android:id="@+id/birthday_button"
+        android:layout_width="match_parent"
+        android:layout_height="56dp"
+        android:text="🎂 设置生日"
+        android:textSize="16dp"
+        android:backgroundTint="#B8835C"
+        android:textColor="#FFFFFF"/>
 
 </LinearLayout>
