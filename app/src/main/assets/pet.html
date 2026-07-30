@@ -3,275 +3,464 @@
 <head>
 <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 <style>
-* { margin: 0; padding: 0; box-sizing: border-box; }
+* { margin: 0; padding: 0; box-sizing: border-box; image-rendering: pixelated; }
 body {
-    background: transparent;
-    overflow: hidden;
-    width: 100%;
-    height: 100%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-family: sans-serif;
+  background: transparent;
+  overflow: hidden;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-family: sans-serif;
 }
-
-.pet-container {
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    transition: transform 0.3s ease;
+:root { --px: 5px; --color: #D4836A; --dark: #B06040; --darker: #8C4828; }
+.crab {
+  position: relative;
+  width: calc(var(--px) * 16);
+  height: calc(var(--px) * 10);
+  animation: breathe 3s ease-in-out infinite;
+  cursor: pointer;
 }
-
-/* 宠物身体 - 一个圆圆的毛球 */
-.pet-body {
-    width: 120px;
-    height: 120px;
-    background: radial-gradient(circle at 40% 35%, #f5e6d3, #d4a574);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.15);
-    transition: all 0.3s ease;
-    position: relative;
-}
-
-/* 耳朵 */
-.ear {
-    position: absolute;
-    width: 30px;
-    height: 35px;
-    background: #c4956a;
-    border-radius: 50% 50% 0 0;
-    top: -12px;
-    transition: transform 0.3s ease;
-}
-.ear-left {
-    left: 15px;
-    transform: rotate(-15deg);
-}
-.ear-right {
-    right: 15px;
-    transform: rotate(15deg);
-}
-
-/* 眼睛 */
-.eyes {
-    display: flex;
-    gap: 20px;
-    margin-top: 10px;
-}
-.eye {
-    width: 14px;
-    height: 16px;
-    background: #3d2a1a;
-    border-radius: 50%;
-    transition: all 0.2s ease;
-    position: relative;
-}
-.eye::after {
-    content: '';
-    position: absolute;
-    width: 5px;
-    height: 5px;
-    background: white;
-    border-radius: 50%;
-    top: 3px;
-    right: 2px;
-}
-
-/* 嘴巴 */
-.mouth {
-    width: 20px;
-    height: 10px;
-    border-bottom: 3px solid #3d2a1a;
-    border-radius: 0 0 20px 20px;
-    margin-top: 8px;
-    transition: all 0.3s ease;
-}
-
-/* 腮红 */
-.blush {
-    width: 20px;
-    height: 12px;
-    background: rgba(255,150,150,0.4);
-    border-radius: 50%;
-    position: absolute;
-    bottom: 25px;
-    opacity: 0;
-    transition: opacity 0.3s ease;
-}
-.blush-left { left: 5px; }
-.blush-right { right: 5px; }
-
-/* 气泡 */
 .bubble {
-    position: absolute;
-    top: -40px;
-    background: white;
-    border-radius: 15px;
-    padding: 8px 14px;
-    font-size: 14px;
-    color: #555;
-    white-space: nowrap;
-    box-shadow: 0 2px 10px rgba(0,0,0,0.1);
-    opacity: 0;
-    transform: translateY(10px);
-    transition: all 0.3s ease;
-    pointer-events: none;
+  position: absolute;
+  top: calc(var(--px) * -5);
+  left: 50%;
+  transform: translateX(-50%);
+  background: white;
+  border-radius: 10px;
+  padding: 4px 10px;
+  font-size: 12px;
+  color: #555;
+  white-space: nowrap;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+  opacity: 0;
+  transition: opacity 0.3s;
+  pointer-events: none;
+  z-index: 10;
 }
-.bubble.show {
-    opacity: 1;
-    transform: translateY(0);
-}
+.bubble.show { opacity: 1; }
 .bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -8px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-left: 8px solid transparent;
-    border-right: 8px solid transparent;
-    border-top: 10px solid white;
+  content: '';
+  position: absolute;
+  bottom: -6px; left: 50%;
+  transform: translateX(-50%);
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  border-top: 6px solid white;
 }
-
-/* 动画状态 */
-.pet-body.happy {
-    transform: scale(1.1);
-    background: radial-gradient(circle at 40% 35%, #ffe0d0, #e8b88a);
+.claw-l {
+  position: absolute;
+  width: calc(var(--px) * 3);
+  height: calc(var(--px) * 3);
+  top: calc(var(--px) * 1.5);
+  left: 0;
+  background: var(--color);
+  transition: transform 0.15s ease;
 }
-.pet-body.angry {
-    background: radial-gradient(circle at 40% 35%, #ffcccc, #d4756a);
-    transform: rotate(5deg);
+.claw-r {
+  position: absolute;
+  width: calc(var(--px) * 3);
+  height: calc(var(--px) * 3);
+  top: calc(var(--px) * 1.5);
+  right: 0;
+  background: var(--color);
+  transition: transform 0.15s ease;
 }
-.pet-body.sleep {
-    transform: scale(0.95);
+.body-main {
+  position: absolute;
+  width: calc(var(--px) * 10);
+  height: calc(var(--px) * 6);
+  top: 0;
+  left: calc(var(--px) * 3);
+  background: var(--color);
+  border-radius: calc(var(--px) * 0.4);
 }
-.pet-body.hurt {
-    transform: scale(0.85);
-    animation: shake 0.5s ease;
+.eye-l {
+  position: absolute;
+  width: calc(var(--px) * 1.5);
+  height: calc(var(--px) * 2.5);
+  background: #1a1a1a;
+  top: calc(var(--px) * 1.5);
+  left: calc(var(--px) * 1.5);
+  z-index: 2;
+  transition: height 0.1s, margin-top 0.1s;
 }
-
-@keyframes shake {
-    0%, 100% { transform: translateX(0) scale(0.85); }
-    25% { transform: translateX(-8px) scale(0.85); }
-    75% { transform: translateX(8px) scale(0.85); }
+.eye-r {
+  position: absolute;
+  width: calc(var(--px) * 1.5);
+  height: calc(var(--px) * 2.5);
+  background: #1a1a1a;
+  top: calc(var(--px) * 1.5);
+  right: calc(var(--px) * 1.5);
+  z-index: 2;
+  transition: height 0.1s, margin-top 0.1s;
 }
-
-/* 空闲动画 - 轻微呼吸 */
+.leg-l {
+  position: absolute;
+  width: calc(var(--px) * 1.5);
+  height: calc(var(--px) * 2);
+  background: var(--color);
+  top: calc(var(--px) * 6);
+  left: calc(var(--px) * 4);
+}
+.leg-li {
+  position: absolute;
+  width: calc(var(--px) * 1.5);
+  height: calc(var(--px) * 2);
+  background: var(--color);
+  top: calc(var(--px) * 6);
+  left: calc(var(--px) * 6);
+}
+.leg-ri {
+  position: absolute;
+  width: calc(var(--px) * 1.5);
+  height: calc(var(--px) * 2);
+  background: var(--color);
+  top: calc(var(--px) * 6);
+  left: calc(var(--px) * 8);
+}
+.leg-r {
+  position: absolute;
+  width: calc(var(--px) * 1.5);
+  height: calc(var(--px) * 2);
+  background: var(--color);
+  top: calc(var(--px) * 6);
+  left: calc(var(--px) * 10);
+}
+.leg-shadow {
+  position: absolute;
+  width: calc(var(--px) * 10);
+  height: calc(var(--px) * 0.8);
+  background: #555;
+  border-radius: calc(var(--px) * 0.4);
+  top: calc(var(--px) * 8);
+  left: calc(var(--px) * 3);
+  opacity: 0.6;
+}
+.crab.tapped .claw-l { transform: rotate(-20deg) translateX(-2px); }
+.crab.tapped .claw-r { transform: rotate(20deg) translateX(2px); }
+.crab.happy { --color: #E89070; --dark: #C87050; }
+.crab.happy .claw-l { transform: rotate(-40deg) translateY(-6px) translateX(-2px); }
+.crab.happy .claw-r { transform: rotate(40deg) translateY(-6px) translateX(2px); }
+.crab.angry { --color: #9A4828; --dark: #7A3010; }
+.crab.angry .claw-l { transform: rotate(-15deg) translateY(-2px); }
+.crab.angry .claw-r { transform: rotate(15deg) translateY(-2px); }
+.crab.hurt { animation: shake 0.5s ease; }
+.crab.sleep { animation: sleepBob 2s ease-in-out infinite; }
+.crab.sleep .eye-l, .crab.sleep .eye-r { height: 2px !important; margin-top: calc(var(--px) * 1); }
 @keyframes breathe {
-    0%, 100% { transform: translateY(0); }
-    50% { transform: translateY(-4px); }
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-3px); }
 }
-.pet-container.idle {
-    animation: breathe 3s ease-in-out infinite;
+@keyframes shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-6px) rotate(-3deg); }
+  40% { transform: translateX(6px) rotate(3deg); }
+  60% { transform: translateX(-4px); }
+  80% { transform: translateX(4px); }
 }
+@keyframes sleepBob {
+  0%, 100% { transform: translateY(0) rotate(0deg); }
+  50% { transform: translateY(2px) rotate(1.5deg); }
+}
+@keyframes tap-bounce {
+  0% { transform: scale(1) translateY(0); }
+  30% { transform: scale(1.2) translateY(-5px); }
+  60% { transform: scale(0.94) translateY(2px); }
+  100% { transform: scale(1) translateY(0); }
+}
+.crab.tapped { animation: tap-bounce 0.35s ease; }
+.prop-hat, .prop-gamepad, .prop-lens { display: none; }
+.prop-hat {
+  position: absolute;
+  width: 0; height: 0;
+  border-left: calc(var(--px) * 2.5) solid transparent;
+  border-right: calc(var(--px) * 2.5) solid transparent;
+  border-bottom: calc(var(--px) * 3.5) solid #E03030;
+  top: calc(var(--px) * -3.2);
+  left: calc(var(--px) * 5.5);
+  z-index: 5;
+}
+.prop-hat::before {
+  content: '';
+  position: absolute;
+  width: calc(var(--px) * 1);
+  height: calc(var(--px) * 1);
+  background: white;
+  border-radius: 50%;
+  top: calc(var(--px) * -4);
+  left: calc(var(--px) * -0.5);
+}
+.prop-hat::after {
+  content: '';
+  position: absolute;
+  width: calc(var(--px) * 6);
+  height: calc(var(--px) * 1);
+  background: white;
+  border-radius: 1px;
+  top: calc(var(--px) * 2.8);
+  left: calc(var(--px) * -3);
+}
+.crab.xmas .prop-hat { display: block; }
+.prop-gamepad {
+  position: absolute;
+  width: calc(var(--px) * 7);
+  height: calc(var(--px) * 5);
+  background: #0d1117;
+  border: calc(var(--px) * 0.3) solid #2a2a3a;
+  border-radius: calc(var(--px) * 0.4);
+  top: calc(var(--px) * -6.8);
+  left: calc(var(--px) * 4.5);
+  z-index: 5;
+}
+.prop-gamepad::before {
+  content: '';
+  position: absolute;
+  width: calc(var(--px) * 1.2);
+  height: calc(var(--px) * 1.2);
+  background: #4488ff;
+  top: calc(var(--px) * 0.8);
+  left: calc(var(--px) * 0.8);
+  box-shadow:
+    calc(var(--px) * 2) 0 0 0 #44cc66,
+    calc(var(--px) * 3.8) 0 0 calc(var(--px) * -0.1) #ffcc00,
+    calc(var(--px) * 0.4) calc(var(--px) * 1.8) calc(var(--px) * 0.1) 0 #22aa44,
+    calc(var(--px) * 2.2) calc(var(--px) * 1.8) calc(var(--px) * 0.1) 0 #22aa44,
+    calc(var(--px) * 4) calc(var(--px) * 1.8) 0 calc(var(--px) * -0.1) #22aa44,
+    calc(var(--px) * 1.6) calc(var(--px) * 3.2) 0 calc(var(--px) * -0.2) #ff4444;
+}
+.prop-gamepad::after {
+  content: '';
+  position: absolute;
+  width: calc(var(--px) * 2.5);
+  height: calc(var(--px) * 1);
+  background: #222233;
+  border-radius: calc(var(--px) * 0.2);
+  bottom: calc(var(--px) * -1.3);
+  left: calc(var(--px) * 2.2);
+}
+.crab.gaming .prop-gamepad { display: block; }
+.prop-gamepad-hand {
+  display: none;
+  position: absolute;
+  width: calc(var(--px) * 3.8);
+  height: calc(var(--px) * 2.4);
+  background: #3a3a3a;
+  border-radius: calc(var(--px) * 0.4);
+  top: calc(var(--px) * 0.3);
+  left: calc(var(--px) * -0.4);
+  z-index: 6;
+}
+.prop-gamepad-hand::before {
+  content: '';
+  position: absolute;
+  width: calc(var(--px) * 0.7);
+  height: calc(var(--px) * 1.6);
+  background: #666;
+  border-radius: 1px;
+  top: calc(var(--px) * 0.4);
+  left: calc(var(--px) * 0.6);
+}
+.prop-gamepad-hand::after {
+  content: '';
+  position: absolute;
+  width: calc(var(--px) * 0.9);
+  height: calc(var(--px) * 0.9);
+  background: #E05050;
+  border-radius: 50%;
+  top: calc(var(--px) * 0.7);
+  right: calc(var(--px) * 0.6);
+}
+.crab.gaming .prop-gamepad-hand { display: block; }
+@keyframes eyeShift {
+  0%, 40% { transform: translateX(0); }
+  50%, 90% { transform: translateX(calc(var(--px) * 0.6)); }
+  100% { transform: translateX(0); }
+}
+.crab.gaming .eye-l, .crab.gaming .eye-r { animation: eyeShift 1s steps(1) infinite; }
+.prop-lens {
+  position: absolute;
+  width: calc(var(--px) * 2.8);
+  height: calc(var(--px) * 2.8);
+  border: calc(var(--px) * 0.5) solid #333;
+  border-radius: 50%;
+  top: calc(var(--px) * 0.2);
+  left: calc(var(--px) * 0.1);
+  z-index: 5;
+  background: rgba(200,220,255,0.25);
+}
+.prop-lens::after {
+  content: '';
+  position: absolute;
+  width: calc(var(--px) * 0.5);
+  height: calc(var(--px) * 2);
+  background: #333;
+  border-radius: 2px;
+  top: calc(var(--px) * 2.3);
+  left: calc(var(--px) * 0.65);
+}
+.crab.curious .prop-lens { display: block; }
 </style>
 </head>
 <body>
-
-<div class="pet-container idle" id="pet">
-    <div class="bubble" id="bubble"></div>
-    <div class="pet-body" id="body">
-        <div class="ear ear-left"></div>
-        <div class="ear ear-right"></div>
-        <div class="eyes">
-            <div class="eye" id="eye-left"></div>
-            <div class="eye" id="eye-right"></div>
-        </div>
-        <div class="mouth" id="mouth"></div>
-        <div class="blush blush-left" id="blush-left"></div>
-        <div class="blush blush-right" id="blush-right"></div>
-    </div>
+<div class="crab" id="crab">
+  <div class="bubble" id="bubble"></div>
+  <div class="prop-hat"></div>
+  <div class="prop-gamepad"></div>
+  <div class="prop-lens"></div>
+  <div class="claw-l"></div>
+  <div class="claw-r"><div class="prop-gamepad-hand"></div></div>
+  <div class="body-main">
+    <div class="eye-l"></div>
+    <div class="eye-r"></div>
+  </div>
+  <div class="leg-l"></div>
+  <div class="leg-li"></div>
+  <div class="leg-ri"></div>
+  <div class="leg-r"></div>
+  <div class="leg-shadow"></div>
 </div>
-
 <script>
-// ========== 宠物引擎 ==========
-const pet = {
-    body: document.getElementById('body'),
-    bubble: document.getElementById('bubble'),
-    blushLeft: document.getElementById('blush-left'),
-    blushRight: document.getElementById('blush-right'),
-    mouth: document.getElementById('mouth'),
-    container: document.getElementById('pet'),
-    eyeLeft: document.getElementById('eye-left'),
-    eyeRight: document.getElementById('eye-right'),
-
-    bubbleTimer: null,
-
-    // 气泡
-    showBubble(text, duration) {
-        this.bubble.textContent = text;
-        this.bubble.classList.add('show');
-        clearTimeout(this.bubbleTimer);
-        this.bubbleTimer = setTimeout(() => {
-            this.bubble.classList.remove('show');
-        }, duration || 2000);
-    },
-
-    // 重置所有状态
-    resetState() {
-        this.body.className = '';
-        this.container.className = 'pet-container idle';
-        this.blushLeft.style.opacity = '0';
-        this.blushRight.style.opacity = '0';
-        this.mouth.style.borderBottom = '3px solid #3d2a1a';
-        this.mouth.style.borderRadius = '0 0 20px 20px';
-        this.eyeLeft.style.width = '14px';
-        this.eyeLeft.style.height = '16px';
-        this.eyeRight.style.width = '14px';
-        this.eyeRight.style.height = '16px';
-        setTimeout(() => {
-            this.container.className = 'pet-container idle';
-        }, 800);
-    }
+const crab = document.getElementById('crab');
+const bubble = document.getElementById('bubble');
+let bubbleTimer = null;
+let currentMood = 'idle';
+let lastInteractAt = Date.now();
+let lonelyLevel = 0;
+let lonelyLock = false;
+const moods = { idle: { cls: '', msg: '' }, happy: { cls: 'happy', msg: '嘿嘿嘿～' }, angry: { cls: 'angry', msg: '别戳了！(╯°□°)╯' }, hurt: { cls: 'hurt', msg: '呜哇！！' }, sleep: { cls: 'sleep', msg: 'Zzz...' } };
+function showBubble(text, dur) {
+  clearTimeout(bubbleTimer);
+  bubble.textContent = text;
+  bubble.classList.add('show');
+  bubbleTimer = setTimeout(() => bubble.classList.remove('show'), dur || 2000);
+}
+function setMood(m) {
+  currentMood = m;
+  const propCls = PROPS.filter(p => crab.classList.contains(p));
+  crab.className = 'crab';
+  propCls.forEach(p => crab.classList.add(p));
+  const mood = moods[m];
+  if (mood.cls) requestAnimationFrame(() => crab.classList.add(mood.cls));
+  if (mood.msg) showBubble(mood.msg);
+}
+function doBlink() {
+  const eyes = crab.querySelectorAll('.eye-l, .eye-r');
+  eyes.forEach(e => { e.style.height = '2px'; e.style.marginTop = '8px'; });
+  setTimeout(() => { eyes.forEach(e => { e.style.height = ''; e.style.marginTop = ''; }); }, 140);
+}
+function getTimePeriod() {
+  const h = new Date().getHours();
+  if (h >= 5 && h < 9) return 'morning';
+  if (h >= 9 && h < 12) return 'forenoon';
+  if (h >= 12 && h < 14) return 'noon';
+  if (h >= 14 && h < 18) return 'afternoon';
+  if (h >= 18 && h < 21) return 'evening';
+  if (h >= 21 && h < 24) return 'night';
+  return 'latenight';
+}
+const murmurs = {
+  morning: ['早上好呀～', '今天也要加油哦！', '阳光正好～', '伸个懒腰～(´-ω-`)'],
+  forenoon: ['认真工作中……', '有什么我能帮你的吗？', '咔咔咔……（思考中）', '嗯嗯嗯～'],
+  noon: ['去吃饭了吗？', '该休息一下啦～', '午饭吃了什么？', '困困的……'],
+  afternoon: ['下午也要元气满满！', '要不要喝杯水？', '专注中……别打扰我！', '( •̀ ω •́ )✧'],
+  evening: ['快到傍晚了～', '今天辛苦了', '夕阳好漂亮！', '差不多可以收工了～'],
+  night: ['夜深了记得早点睡哦', '今天过得怎么样？', '要不要和我聊聊天？', '(っ˘ω˘ς)'],
+  latenight: ['还不睡吗……', '深夜了，注意身体', '陪着你呢，别担心', 'Zzz……（快睡着了）']
 };
-
-// ========== 手势事件 ==========
-const Engine = {
-    onTap() {
-        pet.resetState();
-        pet.body.classList.add('happy');
-        pet.showBubble('嘿嘿~', 1500);
-        setTimeout(() => pet.resetState(), 1000);
-    },
-    onDoubleTap() {
-        pet.resetState();
-        pet.body.classList.add('happy');
-        pet.blushLeft.style.opacity = '0.6';
-        pet.blushRight.style.opacity = '0.6';
-        pet.showBubble('干嘛啦！⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄', 2000);
-        setTimeout(() => pet.resetState(), 1500);
-    },
-    onTripleTap() {
-        pet.resetState();
-        pet.body.classList.add('angry');
-        pet.showBubble('别戳了！(◣_◢)', 2000);
-        setTimeout(() => pet.resetState(), 1500);
-    },
-    onRapidTap() {
-        pet.resetState();
-        pet.body.classList.add('angry');
-        pet.mouth.style.borderBottom = '3px solid #d4756a';
-        pet.mouth.style.borderRadius = '20px 20px 0 0';
-        pet.showBubble('你完了！(╯°□°)╯', 2000);
-        setTimeout(() => pet.resetState(), 1500);
-    },
-    onFuriousTap() {
-        pet.resetState();
-        pet.body.classList.add('hurt');
-        pet.showBubble('呜哇——！(;´༎ຶД༎ຶ`)', 2500);
-        setTimeout(() => pet.resetState(), 2000);
-    },
-    onLongPress() {
-        pet.resetState();
-        pet.showBubble('唔…干嘛一直按着我', 2000);
-        setTimeout(() => pet.resetState(), 1500);
+function checkLatenightSleep() {
+  if (getTimePeriod() === 'latenight' && currentMood === 'idle') {
+    setMood('sleep');
+    showBubble('深夜了……好困哦 Zzz', 4000);
+    setTimeout(() => { if (currentMood === 'sleep') setMood('idle'); }, 5000);
+  }
+}
+function schedulemurmur() {
+  const delay = 40000 + Math.random() * 50000;
+  setTimeout(() => {
+    if (!lonelyLock && currentMood !== 'angry') {
+      const period = getTimePeriod();
+      const pool = murmurs[period];
+      const text = pool[Math.floor(Math.random() * pool.length)];
+      if (period === 'latenight' && currentMood === 'idle' && Math.random() > 0.5) {
+        setMood('sleep');
+        showBubble(text, 3500);
+        setTimeout(() => { if (currentMood === 'sleep') setMood('idle'); }, 4500);
+      } else if (currentMood === 'idle' || currentMood === 'sleep') {
+        if (currentMood === 'sleep') setMood('idle');
+        showBubble(text, 3000);
+      }
     }
+    schedulemurmur();
+  }, delay);
+}
+const LONELY_THRESHOLDS = [2*60*1000, 5*60*1000, 12*60*1000];
+const LONELY_MSGS = [
+  ['有人吗……', '好无聊哦～', '( ´•̥̥̥ω•̥̥̥` )'],
+  ['你去哪里了？', '壳壳蟹一个人好孤独……', '(´;ω;`)'],
+  ['呜……好久没人理我了', '你忘记我了吗？(っ °Д °;)っ', '…………(低头)']
+];
+function checkLoneliness() {
+  const idle = Date.now() - lastInteractAt;
+  let newLevel = 0;
+  for (let i = LONELY_THRESHOLDS.length - 1; i >= 0; i--) {
+    if (idle >= LONELY_THRESHOLDS[i]) { newLevel = i + 1; break; }
+  }
+  if (newLevel > lonelyLevel) {
+    lonelyLevel = newLevel;
+    lonelyLock = true;
+    const pool = LONELY_MSGS[lonelyLevel - 1];
+    const text = pool[Math.floor(Math.random() * pool.length)];
+    if (lonelyLevel === 3 && currentMood === 'idle') { crab.classList.add('hurt'); setTimeout(() => crab.classList.remove('hurt'), 600); }
+    showBubble(text, 4000);
+    setTimeout(() => { lonelyLock = false; }, 5000);
+  }
+  setTimeout(checkLoneliness, 30000);
+}
+const PROPS = ['xmas', 'gaming', 'curious'];
+function setProp(p) {
+  PROPS.forEach(x => crab.classList.remove(x));
+  if (p && PROPS.includes(p)) crab.classList.add(p);
+}
+function clearProps() { PROPS.forEach(p => crab.classList.remove(p)); }
+function randomProp() {
+  const cur = PROPS.filter(p => crab.classList.contains(p))[0];
+  const others = PROPS.filter(p => p !== cur);
+  const next = others[Math.floor(Math.random() * others.length)];
+  setProp(next);
+  const msgs = { xmas: '🎄圣诞快乐！', gaming: '🎮玩一把！', curious: '🔍探索中…' };
+  showBubble(msgs[next] || '换个装扮！', 2000);
+}
+window.petEngine = {
+  onTap() { lastInteractAt = Date.now(); lonelyLevel = 0; crab.classList.remove('tapped'); void crab.offsetWidth; crab.classList.add('tapped'); const msgs = ['嘿嘿~', '干嘛啦！', '哟！', '⁄(⁄ ⁄•⁄ω⁄•⁄ ⁄)⁄', '你来啦～']; showBubble(msgs[Math.floor(Math.random() * msgs.length)], 1500); setTimeout(() => crab.classList.remove('tapped'), 400); },
+  onDoubleTap() { lastInteractAt = Date.now(); lonelyLevel = 0; setMood('happy'); showBubble('嘿嘿嘿～', 2000); setTimeout(() => setMood('idle'), 2500); },
+  onTripleTap() { lastInteractAt = Date.now(); lonelyLevel = 0; setMood('hurt'); showBubble('呜哇别戳了！', 1800); setTimeout(() => setMood('idle'), 2000); },
+  onRapidTap() { lastInteractAt = Date.now(); lonelyLevel = 0; setMood('angry'); showBubble('(╯°□°)╯ 够了！', 2500); setTimeout(() => setMood('idle'), 3000); },
+  onFuriousTap() { lastInteractAt = Date.now(); lonelyLevel = 0; setMood('angry'); crab.classList.add('hurt'); showBubble('！！！你是故意的吧！！！', 3000); setTimeout(() => { crab.classList.remove('hurt'); setMood('idle'); }, 3500); },
+  onLongPress() { lastInteractAt = Date.now(); lonelyLevel = 0; setMood('sleep'); showBubble('Zzz...', 3000); setTimeout(() => setMood('idle'), 4000); },
+  setProp(p) { setProp(p); },
+  clearProps() { clearProps(); },
+  randomProp() { randomProp(); }
 };
-
-window.petEngine = Engine;
+function scheduleBlink() { setTimeout(() => { doBlink(); scheduleBlink(); }, 3500 + Math.random() * 2000); }
+scheduleBlink();
+schedulemurmur();
+setTimeout(checkLoneliness, 30000);
+setInterval(checkLatenightSleep, 5 * 60 * 1000);
+(function() {
+  const period = getTimePeriod();
+  const greets = { morning: '早上好呀～', forenoon: '上午好！(ﾉ◕ヮ◕)ﾉ', noon: '午饭吃了吗？', afternoon: '下午好～', evening: '傍晚了，辛苦了～', night: '夜晚好，陪着你呢', latenight: '这么晚还没睡？' };
+  const now = new Date();
+  const month = now.getMonth() + 1;
+  const day = now.getDate();
+  if (month === 12 || (month === 1 && day <= 5)) setProp('xmas');
+  if (window.petBirthday && window.petBirthday.month === month && window.petBirthday.day === day) {
+    setTimeout(() => { setProp('xmas'); showBubble('🎂 生日快乐！壳壳蟹为你庆生～', 5000); }, 1200);
+  } else {
+    setTimeout(() => showBubble(greets[period], 3000), 800);
+  }
+})();
 </script>
 </body>
 </html>
