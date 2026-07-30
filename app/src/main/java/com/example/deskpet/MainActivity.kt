@@ -18,47 +18,29 @@ class MainActivity : Activity() {
         private const val NOTIFICATION_PERMISSION_REQUEST = 1002
     }
 
+    private lateinit var statusText: TextView
+    private lateinit var actionButton: Button
+    private lateinit var permissionButton: Button
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
 
-        val statusText = findViewById<TextView>(R.id.status_text)
-        val actionButton = findViewById<Button>(R.id.action_button)
-        val permissionButton = findViewById<Button>(R.id.permission_button)
-
-        fun hasOverlayPermission(): Boolean {
-            return Settings.canDrawOverlays(this)
-        }
-
-        fun hasNotificationPermission(): Boolean {
-            return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-                checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) ==
-                        android.content.pm.PackageManager.PERMISSION_GRANTED
-            } else true
-        }
-
-        fun updateUI() {
-            val overlayOk = hasOverlayPermission()
-            val notifOk = hasNotificationPermission()
-
-            statusText.text = buildString {
-                append("📋 权限状态\n\n")
-                append(if (overlayOk) "✅ 悬浮窗权限：已授权" else "❌ 悬浮窗权限：未授权")
-                append("\n")
-                append(if (notifOk) "✅ 通知权限：已授权" else "❌ 通知权限：未授权")
-            }
-
-            actionButton.text = if (overlayOk && notifOk) "🚀 启动桌宠！" else "请先授权所有权限"
-            actionButton.isEnabled = overlayOk && notifOk
-        }
+        statusText = findViewById(R.id.status_text)
+        actionButton = findViewById(R.id.action_button)
+        permissionButton = findViewById(R.id.permission_button)
 
         permissionButton.setOnClickListener {
             val items = mutableListOf<String>()
-            if (!hasOverlayPermission()) {
+            if (!Settings.canDrawOverlays(this)) {
                 items.add("🔘 悬浮窗权限（显示在其他应用上层）")
             }
-            if (!hasNotificationPermission()) {
-                items.add("🔔 通知权限")
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+                if (checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) !=
+                    android.content.pm.PackageManager.PERMISSION_GRANTED
+                ) {
+                    items.add("🔔 通知权限")
+                }
             }
 
             if (items.isEmpty()) {
@@ -94,7 +76,7 @@ class MainActivity : Activity() {
         }
 
         actionButton.setOnClickListener {
-            if (hasOverlayPermission() && hasNotificationPermission()) {
+            if (Settings.canDrawOverlays(this) && hasNotificationPermission()) {
                 val intent = Intent(this, OverlayService::class.java)
                 if (actionButton.text.toString().contains("启动")) {
                     if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
@@ -115,6 +97,28 @@ class MainActivity : Activity() {
         updateUI()
     }
 
+    private fun hasNotificationPermission(): Boolean {
+        return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) ==
+                android.content.pm.PackageManager.PERMISSION_GRANTED
+        } else true
+    }
+
+    private fun updateUI() {
+        val overlayOk = Settings.canDrawOverlays(this)
+        val notifOk = hasNotificationPermission()
+
+        statusText.text = buildString {
+            append("📋 权限状态\n\n")
+            append(if (overlayOk) "✅ 悬浮窗权限：已授权" else "❌ 悬浮窗权限：未授权")
+            append("\n")
+            append(if (notifOk) "✅ 通知权限：已授权" else "❌ 通知权限：未授权")
+        }
+
+        actionButton.text = if (overlayOk && notifOk) "🚀 启动桌宠！" else "请先授权所有权限"
+        actionButton.isEnabled = overlayOk && notifOk
+    }
+
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (requestCode == OVERLAY_PERMISSION_REQUEST) {
@@ -133,19 +137,6 @@ class MainActivity : Activity() {
 
     override fun onResume() {
         super.onResume()
-        val actionButton = findViewById<Button>(R.id.action_button)
-        val statusText = findViewById<TextView>(R.id.status_text)
-        val overlayOk = Settings.canDrawOverlays(this)
-        val notifOk = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-            checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) ==
-                    android.content.pm.PackageManager.PERMISSION_GRANTED
-        } else true
-
-        statusText.text = buildString {
-            append("📋 权限状态\n\n")
-            append(if (overlayOk) "✅ 悬浮窗权限：已授权" else "❌ 悬浮窗权限：未授权")
-            append("\n")
-            append(if (notifOk) "✅ 通知权限：已授权" else "❌ 通知权限：未授权")
-        }
+        updateUI()
     }
 }
