@@ -1,5 +1,7 @@
 package com.example.deskpet
 
+import android.app.Activity
+import android.app.AlertDialog
 import android.content.Intent
 import android.net.Uri
 import android.os.Build
@@ -8,10 +10,8 @@ import android.provider.Settings
 import android.widget.Button
 import android.widget.TextView
 import android.widget.Toast
-import androidx.appcompat.app.AlertDialog
-import androidx.appcompat.app.AppCompatActivity
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : Activity() {
 
     companion object {
         private const val OVERLAY_PERMISSION_REQUEST = 1001
@@ -26,12 +26,10 @@ class MainActivity : AppCompatActivity() {
         val actionButton = findViewById<Button>(R.id.action_button)
         val permissionButton = findViewById<Button>(R.id.permission_button)
 
-        // 检查悬浮窗权限
         fun hasOverlayPermission(): Boolean {
             return Settings.canDrawOverlays(this)
         }
 
-        // 检查通知权限（Android 13+）
         fun hasNotificationPermission(): Boolean {
             return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
                 checkSelfPermission(android.Manifest.permission.POST_NOTIFICATIONS) ==
@@ -44,12 +42,9 @@ class MainActivity : AppCompatActivity() {
             val notifOk = hasNotificationPermission()
 
             statusText.text = buildString {
-                append("📋 权限状态
-
-")
+                append("📋 权限状态\n\n")
                 append(if (overlayOk) "✅ 悬浮窗权限：已授权" else "❌ 悬浮窗权限：未授权")
-                append("
-")
+                append("\n")
                 append(if (notifOk) "✅ 通知权限：已授权" else "❌ 通知权限：未授权")
             }
 
@@ -57,7 +52,6 @@ class MainActivity : AppCompatActivity() {
             actionButton.isEnabled = overlayOk && notifOk
         }
 
-        // 悬浮窗权限按钮
         permissionButton.setOnClickListener {
             val items = mutableListOf<String>()
             if (!hasOverlayPermission()) {
@@ -99,7 +93,6 @@ class MainActivity : AppCompatActivity() {
                 .show()
         }
 
-        // 启动/停止按钮
         actionButton.setOnClickListener {
             if (hasOverlayPermission() && hasNotificationPermission()) {
                 val intent = Intent(this, OverlayService::class.java)
@@ -140,12 +133,7 @@ class MainActivity : AppCompatActivity() {
 
     override fun onResume() {
         super.onResume()
-        // 从权限设置页面返回时刷新状态
         val actionButton = findViewById<Button>(R.id.action_button)
-        if (actionButton.text.toString() == "⏹ 停止桌宠") {
-            // 服务在运行，不刷新按钮文字
-        }
-        // 刷新状态文字
         val statusText = findViewById<TextView>(R.id.status_text)
         val overlayOk = Settings.canDrawOverlays(this)
         val notifOk = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -154,12 +142,9 @@ class MainActivity : AppCompatActivity() {
         } else true
 
         statusText.text = buildString {
-            append("📋 权限状态
-
-")
+            append("📋 权限状态\n\n")
             append(if (overlayOk) "✅ 悬浮窗权限：已授权" else "❌ 悬浮窗权限：未授权")
-            append("
-")
+            append("\n")
             append(if (notifOk) "✅ 通知权限：已授权" else "❌ 通知权限：未授权")
         }
     }
